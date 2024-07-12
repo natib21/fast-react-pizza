@@ -1,9 +1,51 @@
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Home from './ui/Home'
+import Menu, { loader as menuLoader } from './features/menu/Menu'
+import Cart from './features/cart/Cart'
+import Error from './ui/Error'
+import CreatOrder, { action as orderAction } from './features/order/CreateOrder'
+import Order, { loader as orderLoader } from './features/order/Order'
+import AppLayout from './ui/AppLayout'
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    errorElement: <Error />,
+    children: [
+
+      {
+        path: '/',
+        element: <Home />
+      },
+      {
+        path: '/menu',
+        element: <Menu />,
+        loader: menuLoader,
+        errorElement: <Error />,
+      },
+      {
+        path: '/cart',
+        element: <Cart />
+      },
+      {
+        path: '/order/new',
+        element: <CreatOrder />,
+        action: orderAction
+      },
+      {
+        path: '/order/:orderId',
+        element: <Order />,
+        loader: orderLoader,
+        errorElement: <Error />,
+
+      }
+    ]
+  },
+
+])
 function App() {
-  const x = 4 + 2;
+
   return (
-    <div>
-      Hello Vite
-    </div>
+    <RouterProvider router={router} />
   )
 }
 
