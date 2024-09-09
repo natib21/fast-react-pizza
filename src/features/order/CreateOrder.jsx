@@ -43,32 +43,32 @@ function CreateOrder() {
   const isSubmiting = navigate.state === "submitting"
 
   return (
-    <div>
-      <h2>Ready to order? Lets go!</h2>
+    <div className="px-4 py-6">
+      <h2 className="text-xl font-semibold mb-8 ">Ready to order? Lets go!</h2>
 
       <Form method="POST">
-        <div>
-          <label>First Name</label>
-          <input type="text" name="customer" required  className="input"/>
+        <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
+          <label className="sm:basis-40">First Name</label>
+          <input type="text" name="customer" required  className="input flex-1"/>
         </div>
 
-        <div>
-          <label>Phone number</label>
-          <div>
-            <input type="tel" name="phone" required  className="input"/>
+        <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
+          <label className="sm:basis-40">Phone number</label>
+          <div className="flex-1">
+            <input type="tel" name="phone" required  className="input w-full"/>
+            {formError?.phone && <p className="text-xs mt-2 text-red-700 bg-red-100 p-2 rounded-md">{formError.phone}</p>}
           </div>
-          {formError?.phone && <p>{formError.phone}</p>}
         </div>
 
-        <div>
-          <label>Address</label>
-          <div>
+        <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
+          <label className="sm:basis-40">Address</label>
+          <div className="flex-1">
             <input 
-            className="input" type="text" name="address" required />
+            className="input w-full" type="text" name="address" required />
           </div>
         </div>
 
-        <div>
+        <div className="mb-12 flex gap-5 items-center " >
           <input
           className="h-6 w-6 accent-yellow-400  focus:outline-none
                          focus:ring focus:ring-yellow-400 focus:ring-offset-2"
@@ -78,7 +78,7 @@ function CreateOrder() {
           // value={withPriority}
           // onChange={(e) => setWithPriority(e.target.checked)}
           />
-          <label htmlFor="priority">Want to yo give your order priority?</label>
+          <label htmlFor="priority" className="font-medium">Want to yo give your order priority?</label>
         </div>
 
         <div>
