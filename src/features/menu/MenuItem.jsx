@@ -1,15 +1,17 @@
+import Button from "../../ui/Button";
 import { formatCurrency } from "../../utility/helpers";
 
 function MenuItem(prop) {
   const { name, unitPrice, ingredients, soldOut, imageUrl } = prop.pizza;
   return (
-    <li>
-      <img src={imageUrl} alt={name} />
-      <div>
-        <p>{name}</p>
-        <p>{ingredients}</p>
-        <div>
-          {!soldOut ? <p>{formatCurrency(unitPrice)}</p> : <p>Sold out</p>}
+    <li className="flex gap-4 py-2">
+      <img src={imageUrl} alt={name} className={`h-24 ${soldOut ? 'opacity-70 grayscale':""}`} />
+      <div className="flex flex-col grow pt-o.5">
+        <p className=" font-medium">{name}</p>
+        <p className="text-sm italic text-stone-500 capitalize">{ingredients.join(', ')}</p>
+        <div className="mt-auto flex items-center justify-between">
+          {!soldOut ? <p className="text-sm">{formatCurrency(unitPrice)}</p> : <p className="text-sm uppercase font-medium text-stone-500">Sold out</p>}
+        <Button type='small'>Add to cart</Button>
         </div>
       </div>
     </li>
