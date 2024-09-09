@@ -8,6 +8,7 @@ const isValidPhone = (str) =>
 
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
+import Button from "../../ui/Button";
 
 
 const fakeCart = [
@@ -81,17 +82,7 @@ function CreateOrder() {
         </div>
 
         <div>
-          <button  
-                  className='focus:outline-none  focus:ring
-                   focus:ring-yellow-300 
-                   focus:ring-offset-2 bg-yellow-500
-                    uppercase font-semibold
-                     text-stone-800 py-3 px-4 
-                     inline-block tracking-wide 
-                     rounded-full hover:bg-yellow-300 
-                     transition-colors duration-300
-                      disabled:cursor-not-allowed'
-                       disabled={isSubmiting}>{isSubmiting ? 'Placing order...' : 'Order now'}</button>
+          <Button disabled={isSubmiting} >{isSubmiting ? 'Placing order...' : 'Order now'}</Button>
         </div>
         <input type="hidden" value={JSON.stringify(cart)} name='cart' />
       </Form>
