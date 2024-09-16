@@ -9,6 +9,7 @@ const isValidPhone = (str) =>
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
+import { useSelector } from "react-redux";
 
 
 const fakeCart = [
@@ -41,7 +42,7 @@ function CreateOrder() {
   const navigate = useNavigation();
   const formError = useActionData()
   const isSubmiting = navigate.state === "submitting"
-
+  const name = useSelector(state => state.user.userName);
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-semibold mb-8 ">Ready to order? Lets go!</h2>
@@ -49,7 +50,7 @@ function CreateOrder() {
       <Form method="POST">
         <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
-          <input type="text" name="customer" required  className="input flex-1"/>
+          <input type="text" name="customer" required  className="input flex-1" defaultValue={name}/>
         </div>
 
         <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
