@@ -6,6 +6,7 @@ import Error from './ui/Error'
 import CreatOrder, { action as orderAction } from './features/order/CreateOrder'
 import Order, { loader as orderLoader } from './features/order/Order'
 import AppLayout from './ui/AppLayout'
+
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -45,7 +46,9 @@ const router = createBrowserRouter([
 function App() {
 
   return (
-    <RouterProvider router={router} />
+
+      <RouterProvider router={router} />
+    
   )
 }
 
