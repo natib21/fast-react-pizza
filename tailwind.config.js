@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line
 export default {
