@@ -46,7 +46,7 @@ function Order() {
         <p className="text-xs text-stone-500">(Estimated delivery: {formatDate(estimatedDelivery)})</p>
       </div>
     <ul className="divide-y divide-stone-200 border-b border-t">{
-   cart.map(item => <OrderItem  item={item} key={item.key}/>)
+   cart.map(item => <OrderItem  item={item} key={item.pizzaId}/>)
 }</ul>
       <div className="space-y-2 bg-slate-200 px-6 py-5">
         <p className="text-sm font-medium text-slate-600 ">Price pizza: {formatCurrency(orderPrice)}</p>

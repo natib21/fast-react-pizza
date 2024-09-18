@@ -1,14 +1,16 @@
-import { useDispatch } from "react-redux"
+import { useDispatch,useSelector } from "react-redux"
 import Button from "../../ui/Button"
-import { decreaseItemQuantity, increaseItemQuantity } from "./cartSlice"
+import { decreaseItemQuantity, getCurrentQuantityById, increaseItemQuantity } from "./cartSlice"
 
 
  const UpdateItemQuantity = ({pizzaId})=>{
-    console.log(pizzaId)
+  const currentQuantity = useSelector(getCurrentQuantityById(pizzaId))
+  console.log(currentQuantity)
     const dispatch = useDispatch()
     return (
-        <div className="flex gap-1 items-center md:gap-3">
+        <div className="flex gap-2 items-center md:gap-3">
           <Button type='round' onClick={()=>dispatch(decreaseItemQuantity(pizzaId))}>-</Button>
+          <span className="text-sm font-medium">{currentQuantity}</span>
           <Button type='round' onClick={()=>dispatch(increaseItemQuantity(pizzaId))}>+</Button>
         </div>
     )

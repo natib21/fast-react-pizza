@@ -5,14 +5,19 @@ const isValidPhone = (str) =>
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
     str
   );
-
+import { useState } from "react";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCart, getCart, getTotalCartPrice } from "../cart/cartSlice";
+import EmptyCart from "../cart/EmptyCart";
+import store from '../../store'
+import { formatCurrency } from "../../utility/helpers";
+import { fetchAddress, userName } from "../user/userSlice";
 
 
-const fakeCart = [
+/* const fakeCart = [
   {
     pizzaId: 12,
     name: "Mediterranean",
@@ -34,19 +39,25 @@ const fakeCart = [
     unitPrice: 15,
     totalPrice: 15,
   },
-];
+]; */
 
 function CreateOrder() {
-  // const [withPriority, setWithPriority] = useState(false);
-  const cart = fakeCart;
+ const [withPriority, setWithPriority] = useState(false);
+ const dispatch = useDispatch()
+  const cart = useSelector(getCart);
   const navigate = useNavigation();
   const formError = useActionData()
   const isSubmiting = navigate.state === "submitting"
-  const name = useSelector(state => state.user.userName);
+  const name = useSelector(userName);
+
+  const totalCartPrice = useSelector(getTotalCartPrice)
+  const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
+  const totalPrice = totalCartPrice + priorityPrice;
+  if(!cart.length) return <EmptyCart />
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-semibold mb-8 ">Ready to order? Lets go!</h2>
-
+       <Button onClick={()=>dispatch(fetchAddress())}>Get Position</Button>
       <Form method="POST">
         <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
@@ -76,14 +87,14 @@ function CreateOrder() {
             type="checkbox"
             name="priority"
             id="priority"
-          // value={withPriority}
-          // onChange={(e) => setWithPriority(e.target.checked)}
+          value={withPriority}
+          onChange={(e) => setWithPriority(e.target.checked)}
           />
           <label htmlFor="priority" className="font-medium">Want to yo give your order priority?</label>
         </div>
 
         <div>
-          <Button type='primary' disabled={isSubmiting} >{isSubmiting ? 'Placing order...' : 'Order now'}</Button>
+          <Button type='primary' disabled={isSubmiting} >{isSubmiting ? 'Placing order...' : `Order now from ${formatCurrency(totalPrice)}`}</Button>
         </div>
         <input type="hidden" value={JSON.stringify(cart)} name='cart' />
       </Form>
@@ -99,14 +110,14 @@ export async function action({ request }) {
   const order = {
     ...data,
     cart: JSON.parse(data.cart),
-    priority: data.priority === "on"
+    priority: data.priority === "true"
   }
   const error = {}
   if (!isValidPhone(order.phone)) error.phone = 'pls give as your correct phone number we might need it to contact to you'
   if (Object.keys(error).length > 0) return error
   console.log(error)
   const newOrder = await createOrder(order)
-
+  store.dispatch(clearCart())
   return redirect(`/order/${newOrder.id}`)
 }
 export default CreateOrder;
