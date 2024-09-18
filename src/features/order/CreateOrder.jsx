@@ -14,32 +14,8 @@ import { clearCart, getCart, getTotalCartPrice } from "../cart/cartSlice";
 import EmptyCart from "../cart/EmptyCart";
 import store from '../../store'
 import { formatCurrency } from "../../utility/helpers";
-import { fetchAddress, userName } from "../user/userSlice";
+import { fetchAddress } from "../user/userSlice";
 
-
-/* const fakeCart = [
-  {
-    pizzaId: 12,
-    name: "Mediterranean",
-    quantity: 2,
-    unitPrice: 16,
-    totalPrice: 32,
-  },
-  {
-    pizzaId: 6,
-    name: "Vegetale",
-    quantity: 1,
-    unitPrice: 13,
-    totalPrice: 13,
-  },
-  {
-    pizzaId: 11,
-    name: "Spinach and Mushroom",
-    quantity: 1,
-    unitPrice: 15,
-    totalPrice: 15,
-  },
-]; */
 
 function CreateOrder() {
  const [withPriority, setWithPriority] = useState(false);
@@ -48,8 +24,8 @@ function CreateOrder() {
   const navigate = useNavigation();
   const formError = useActionData()
   const isSubmiting = navigate.state === "submitting"
-  const name = useSelector(userName);
-
+  const {userName,status:addressStatus,position,address,error:errorAddress} = useSelector(state => state.user);
+  const isLoadingAddress = addressStatus.state === 'loading'
   const totalCartPrice = useSelector(getTotalCartPrice)
   const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
   const totalPrice = totalCartPrice + priorityPrice;
@@ -57,11 +33,11 @@ function CreateOrder() {
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-semibold mb-8 ">Ready to order? Lets go!</h2>
-       <Button onClick={()=>dispatch(fetchAddress())}>Get Position</Button>
+      
       <Form method="POST">
         <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
-          <input type="text" name="customer" required  className="input flex-1" defaultValue={name}/>
+          <input type="text" name="customer" required  className="input flex-1" defaultValue={userName}/>
         </div>
 
         <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
@@ -72,12 +48,27 @@ function CreateOrder() {
           </div>
         </div>
 
-        <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center">
+        <div className="mb-5 flex gap-2 flex-col sm:flex-row sm:items-center relative">
           <label className="sm:basis-40">Address</label>
-          <div className="flex-1">
+          <div className="flex-1 ">
             <input 
-            className="input w-full" type="text" name="address" required />
+            className="input w-full" type="text" name="address" disabled={isLoadingAddress} required defaultValue={address}/>
+                {addressStatus === 'error' && <p className="text-xs mt-2 text-red-700 bg-red-100 p-2 rounded-md">{errorAddress}</p>}
           </div>
+        {!position.latitude && !position.longtiude &&  <span className=" absolute right-[3px] z-50 top-[3px] md:right-[5px] md:top-[5px] ">
+
+          <Button 
+            type='small' 
+             disabled={isLoadingAddress}
+            onClick={(e)=>{
+              e.preventDefault();
+            dispatch(fetchAddress())
+            }
+            }
+            >
+              Get Position
+            </Button>
+          </span>}
         </div>
 
         <div className="mb-12 flex gap-5 items-center " >
@@ -94,9 +85,10 @@ function CreateOrder() {
         </div>
 
         <div>
-          <Button type='primary' disabled={isSubmiting} >{isSubmiting ? 'Placing order...' : `Order now from ${formatCurrency(totalPrice)}`}</Button>
+          <Button type='primary' disabled={isSubmiting} >{isSubmiting  || isLoadingAddress ? 'Placing order...' : `Order now from ${formatCurrency(totalPrice)}`}</Button>
         </div>
         <input type="hidden" value={JSON.stringify(cart)} name='cart' />
+        <input type="hidden" value={position.longtiude && position.latitude ? `${position.latitude},${position.longtiude}`:''} name='position' />
       </Form>
     </div>
   );
@@ -112,6 +104,7 @@ export async function action({ request }) {
     cart: JSON.parse(data.cart),
     priority: data.priority === "true"
   }
+  console.log(order)
   const error = {}
   if (!isValidPhone(order.phone)) error.phone = 'pls give as your correct phone number we might need it to contact to you'
   if (Object.keys(error).length > 0) return error
